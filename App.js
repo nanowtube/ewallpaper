@@ -128,7 +128,10 @@ function AppContent() {
           ),
           headerTitleAlign: 'center', // Center align the title
           headerRight: () => (
-            <HomeTopBar onSearch={handleSearch} onSort={handleSort} isDarkMode={false} />
+            <HomeTopBar
+              onSearch={handleSearch} // Pass the handleSearch function correctly
+              isDarkMode={isDarkMode}
+            />
           ),
         }}
       >
