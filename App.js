@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import CustomDrawer from './CustomDrawer';
 import { useTheme, ThemeProvider } from './ThemeContext';
 import HomeTopBar from './HomeTopBar';
+import SearchScreen from './screens/SearchScreen'; // Import SearchScreen
 import { Image, View, StyleSheet} from 'react-native'; // Import Image and Vi
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
@@ -31,6 +32,12 @@ function HomeStack({ setBookmarkedWallpapers, bookmarkedWallpapers, searchQuery 
           />
         )}
       </Stack.Screen>
+      {/* Add SearchScreen to the stack */}
+      <Stack.Screen
+        name="Search"
+        component={SearchScreen}
+        options={{ title: 'Search Wallpapers' }} // Set the title
+      />
     </Stack.Navigator>
   );
 }
@@ -79,11 +86,21 @@ function AppContent() {
     };
   
 
-  // Handle search input from search bar
-  const handleSearch = (query) => {
-    setSearchQuery(query); // Update the search query state
-  };
-
+    const handleSearch = (query) => {
+      setSearchQuery(query); // Set the search query when searching from top bar or search screen
+    };
+  
+    const handleSearchCategory = (category) => {
+      setSearchQuery(category); // Set the search query to the selected category
+    };
+  
+    const handleEditorsChoice = () => {
+      setSearchQuery('editors_choice'); // Set the query for Editor's Choice
+    };
+    const handleSort = (sortType) => {
+      setSortOrder(sortType); // This will automatically refetch wallpapers due to the useEffect
+    };
+  
   return (
     <NavigationContainer>
       <Drawer.Navigator
@@ -111,10 +128,7 @@ function AppContent() {
           ),
           headerTitleAlign: 'center', // Center align the title
           headerRight: () => (
-            <HomeTopBar
-              onSearch={handleSearch} // Pass the handleSearch function correctly
-              isDarkMode={isDarkMode}
-            />
+            <HomeTopBar onSearch={handleSearch} onSort={handleSort} isDarkMode={false} />
           ),
         }}
       >
@@ -150,7 +164,23 @@ function AppContent() {
             />
           )}
         </Drawer.Screen>
-
+        <Drawer.Screen
+          name="Search"
+          options={{
+            drawerIcon: () => <Icon name="search" size={24} />,
+            title: 'Search Wallpapers',
+          }}
+        >
+          {props => (
+            <SearchScreen
+              {...props}
+              onSearch={handleSearch}            // For handling custom search queries
+              onSearchCategory={handleSearchCategory}  // For handling category-based search
+              onEditorsChoice={handleEditorsChoice}    // For handling Editor's Choice search
+              isDarkMode={isDarkMode}             // For dark mode styling
+            />
+          )}
+        </Drawer.Screen>
       </Drawer.Navigator>
     </NavigationContainer>
   );
